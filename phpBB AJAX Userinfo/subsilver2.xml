@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.2.xsd">
+	<header>
+		<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+		<title lang="en-gb">AJAX User Infos</title>
+		<description lang="en-gb">Shows a small popup with the avatar and infos about the user by mouseover on a username.</description>
+		<author-notes lang="en-gb">For this Mod the user need enabled JavaScript</author-notes>
+		<author-group>
+			<author>
+				<realname>Tobias Schaefer</realname>
+				<email>tobi.schaefer@gmail.com</email>
+				<username>tas2580</username>
+				<homepage>http://www.phpbb-seo.de</homepage>
+				<contributions />
+			</author>
+		</author-group>
+		<mod-version>1.0.3</mod-version>
+		<installation>
+			<level>easy</level>
+			<time>200</time>
+			<target-version>3.0.4</target-version>
+		</installation>
+		<link-group>
+			<link type="parent" lang="en-gb" href="install.xml">Installation Instructions</link>
+		</link-group>
+
+	</header>
+	<action-group>
+		<copy>
+			<file from="root/styles/subsilver2/template/ajax_userinfo.html" to="styles/subsilver2/template/ajax_userinfo.html" />
+		</copy>
+
+		<open src="styles/subsilver2/template/overall_header.html">
+			<edit>
+					<find><![CDATA[<body class="{S_CONTENT_DIRECTION}">]]></find>
+					<action type="after-add"><![CDATA[<!-- INCLUDE ajax_userinfo.html -->]]></action>
+				</edit>
+		</open>
+		<open src="styles/subsilver2/theme/stylesheet.css">
+			<edit>
+				<find><![CDATA[.username-coloured {
+	font-weight: bold;
+}]]></find>
+				<action type="after-add"><![CDATA[/* Ajax User-Info Popups */
+#popup {
+	z-index: 60;
+	position: absolute;
+	display: none;
+	font-size: 10px;
+	width: 350px;
+}
+#ajax_avatar {
+	width:100px;
+	float: left;
+	overflow: hidden;
+	height: 100px;
+	text-align: center;
+}]]></action>
+				</edit>
+		</open>
+	</action-group>
+</mod>

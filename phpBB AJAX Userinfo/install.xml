@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="modx.prosilver.en.xsl" type="text/xsl" ?>
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.2.xsd">
+	<header>
+		<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+		<title lang="en-gb">AJAX User Infos</title>
+		<description lang="en-gb">Shows a small popup with the avatar and infos about the user by mouseover on a username.</description>
+		<author-notes lang="en-gb">For this Mod the user need enabled JavaScript</author-notes>
+		<author-group>
+			<author>
+				<realname>Tobias Schaefer</realname>
+				<email>tobi.schaefer@gmail.com</email>
+				<username>tas2580</username>
+				<homepage>http://www.phpbb-seo.de</homepage>
+			</author>
+		</author-group>
+		<mod-version>1.0.3</mod-version>
+		<installation>
+			<level>easy</level>
+			<time>200</time>
+			<target-version>3.0.4</target-version>
+		</installation>
+		<link-group>
+			<link type="template" lang="en-gb" href="subsilver2.xml">Manual for subsilver2 Style</link>
+		</link-group>
+
+		<history>
+			<entry>
+				<date>2007-06-01</date>
+				<rev-version>0.0.1</rev-version>
+				<changelog lang="en-gb">
+					<change>Initial release.</change>
+				</changelog>
+			</entry>
+
+			<entry>
+				<date>2007-06-04</date>
+				<rev-version>0.0.2</rev-version>
+				<changelog lang="en-gb">
+					<change>Modified JavaScript that the Popup can't go out of the Browserwindow.</change>
+				</changelog>
+			</entry>
+
+			<entry>
+				<date>2007-06-26</date>
+				<rev-version>0.1.0</rev-version>
+				<changelog lang="en-gb">
+					<change>Use a better JavaScript.</change>
+					<change>Fixed Bug with $userid.</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2008-03-15</date>
+				<rev-version>0.1.1</rev-version>
+				<changelog lang="en-gb">
+					<change>Fixed Bug with Avatar</change>
+					<change>Some changes for phpBB 3.0.0</change>
+					<change>Added template for subsilver2</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2008-03-18</date>
+				<rev-version>0.1.2</rev-version>
+				<changelog lang="en-gb">
+					<change>Optimized JavaScript for IE</change>
+					<change>Bether output of avatar path</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2008-03-18</date>
+				<rev-version>0.1.3</rev-version>
+				<changelog lang="en-gb">
+					<change>Fixed some Bugs</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2008-09-14</date>
+				<rev-version>1.0.0</rev-version>
+				<changelog lang="en-gb">
+					<change>Final release</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2008-12-16</date>
+				<rev-version>1.0.1</rev-version>
+				<changelog lang="en-gb">
+					<change>moved includes/ajax_userinfo.php to rootpath</change>
+					<change>made compatible for phpBB 3.0.4</change>
+					<change>Use already existing loading bar form phpBB core</change>
+				</changelog>
+			</entry>
+			<entry>
+				<date>2008-12-22</date>
+				<rev-version>1.0.2</rev-version>
+				<changelog lang="en-gb">
+					<change>Fixed small bugs</change>
+					<change>sow infos in ajax_userinfo.php only if a user have the right to view profiles</change>
+				</changelog>
+			</entry>
+
+			<entry>
+				<date>2009-01-28</date>
+				<rev-version>1.0.3</rev-version>
+				<changelog lang="en-gb">
+					<change>Optimized JavaScript</change>
+				</changelog>
+			</entry>
+
+		</history>
+	</header>
+
+	<action-group>
+		<copy>
+			<file from="root/ajax_userinfo.php" to="ajax_userinfo.php" />
+			<file from="root/styles/prosilver/template/ajax_userinfo.html" to="styles/prosilver/template/ajax_userinfo.html" />
+		</copy>
+
+		<open src="includes/functions_content.php">
+			<edit>
+				<find><![CDATA[		$tpl = (!$username_colour) ? '<a href="{PROFILE_URL}">{USERNAME}</a>' : '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';]]></find>
+				<action type="replace-with"><![CDATA[		$tpl = (!$username_colour) ? '<a href="{PROFILE_URL}" onmouseover="show_popup(' . $user_id . ')" onmouseout="close_popup()">{USERNAME}</a>' : '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured" onmouseover="show_popup(' . $user_id . ')" onmouseout="close_popup()">{USERNAME}</a>';]]></action>
+			</edit>
+		</open>
+
+		<open src="includes/functions.php">
+			<edit>
+				<find><![CDATA['S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],]]></find>
+				<action type="after-add"><![CDATA[		// BEGIN Mod AJAX Userinfo
+		'AJAX_USERINFO_PATH'	=> str_replace('&amp;', '&', append_sid("{$phpbb_root_path}ajax_userinfo.$phpEx", 'userid=USERID')), // don't use &amp; in JavaScript
+		// END Mod AJAX Userinfo]]></action>
+			</edit>
+		</open>
+
+
+		<open src="styles/prosilver/theme/common.css">
+			<edit>
+				<find><![CDATA[.clear {
+	display: block;
+	clear: both;
+	font-size: 1px;
+	line-height: 1px;
+	background: transparent;
+}]]></find>
+				<action type="after-add"><![CDATA[/* Ajax User-Info Popups */
+#popup {
+	z-index: 60;
+	position: absolute;
+	display: none;
+	font-size: 10px;
+	width: 350px;
+}
+
+#ajax_avatar {
+	width:100px;
+	float: left;
+	overflow: hidden;
+	height: 100px;
+	text-align: center;
+}
+]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/template/overall_header.html">
+			<edit>
+				<find><![CDATA[<div id="page-body">]]></find>
+				<action type="after-add"><![CDATA[<!-- INCLUDE ajax_userinfo.html -->]]></action>
+			</edit>
+		</open>
+	</action-group>
+</mod>
